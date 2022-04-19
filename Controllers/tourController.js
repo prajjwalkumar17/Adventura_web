@@ -4,6 +4,7 @@ const APIFeatures = require('./../Utils/APIFeatures');
 exports.getStats = async (req, res) => {
   //get stats
   //this is a test comment
+  //done
   try {
     const stats = await tourModel.aggregate([
       {
@@ -11,14 +12,14 @@ exports.getStats = async (req, res) => {
       },
       {
         $group: {
-          _id: { $toUpper: "$difficulty" },
+          _id: { $toUpper: '$difficulty' },
 
           numTours: { $sum: 1 },
-          numRatings: { $sum: "$ratingsQuantity" },
-          avgRating: { $avg: "$ratingsAverage" },
-          avgPrice: { $avg: "$price" },
-          maxPrice: { $max: "$price" },
-          minPrice: { $min: "$price" },
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          maxPrice: { $max: '$price' },
+          minPrice: { $min: '$price' },
         },
       },
       {
@@ -26,19 +27,18 @@ exports.getStats = async (req, res) => {
       },
     ]);
     res.status(200).json({
-      status: "sucess",
+      status: 'sucess',
       data: {
         stats,
       },
     });
   } catch (err) {
     res.status(400).json({
-      status: "failed",
-      message: "Invalid dataset",
+      status: 'failed',
+      message: 'Invalid dataset',
     });
   }
 };
-
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
