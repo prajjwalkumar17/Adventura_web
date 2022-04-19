@@ -1,6 +1,43 @@
 const tourModel = require('./../Models/tourModel');
 const APIFeatures = require('./../Utils/APIFeatures');
 
+exports.getStats = async (req, res) => {
+  //get stats
+  try {
+    const stats = await tourModel.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: "$difficulty" },
+          numTours: { $sum: 1 },
+          numRatings: { $sum: "$ratingsQuantity" },
+          avgRating: { $avg: "$ratingsAverage" },
+          avgPrice: { $avg: "$price" },
+          maxPrice: { $max: "$price" },
+          minPrice: { $min: "$price" },
+        },
+      },
+      {
+        $sort: { avgPriceg: 1 },
+      },
+    ]);
+    res.status(200).json({
+      status: "sucess",
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "failed",
+      message: "Invalid dataset",
+    });
+  }
+};
+
+
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage';
