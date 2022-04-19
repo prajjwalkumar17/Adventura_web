@@ -3,6 +3,7 @@ const APIFeatures = require('./../Utils/APIFeatures');
 
 exports.getStats = async (req, res) => {
   //get stats
+  //this is a test comment
   try {
     const stats = await tourModel.aggregate([
       {
@@ -11,7 +12,7 @@ exports.getStats = async (req, res) => {
       {
         $group: {
           _id: { $toUpper: "$difficulty" },
-          
+
           numTours: { $sum: 1 },
           numRatings: { $sum: "$ratingsQuantity" },
           avgRating: { $avg: "$ratingsAverage" },
