@@ -3,11 +3,17 @@ const tourController = require('./../Controllers/tourController');
 
 const router = express.Router();
 
-// router.param('id', tourController.checkId);
+router
+  .route('/plan/:year')
+  .get(tourController.aliasTopTours, tourController.getMonthPlans);
 
 router
   .route('/top-5-tours')
   .get(tourController.aliasTopTours, tourController.getAllTours);
+
+router
+  .route('/tour-stats')
+  .get(tourController.aliasTopTours, tourController.getStats);
 
 router
   .route('/')

@@ -1,6 +1,58 @@
 const tourModel = require('./../Models/tourModel');
 const APIFeatures = require('./../Utils/APIFeatures');
 
+exports.getMonthPlans = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const monthPlan = await tourModel.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarting: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: { numTourStarting: -1 },
+      },
+      {
+        $limit: 6,
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'sucess',
+      data: {
+        monthPlan,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+};
+
 exports.getStats = async (req, res) => {
   //get stats
   //this is a test comment
