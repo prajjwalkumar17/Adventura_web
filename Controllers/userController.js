@@ -1,5 +1,7 @@
+const userModel = require('./../Models/userModel');
+
 exports.getAllUsers = (req, res) => {
-  res.status(500).json({
+  const allUserData = res.status(500).json({
     status: 'error',
     message: 'Route not defined as of now!',
   });
