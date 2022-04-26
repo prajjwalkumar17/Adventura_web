@@ -1,4 +1,5 @@
 const User = require('./../Models/userModel');
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
 const TokenSigner = (Givenid) => {
@@ -53,4 +54,60 @@ exports.login = async (req, res, next) => {
       Token: token,
     },
   });
+};
+exports.protect = async (req, res, next) => {
+  //TODO 1 get token and check if its there
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  // console.log(`♠️ ${token}`);
+  if (!token) {
+    return next(
+      res.status(401).json({
+        status: 'failed',
+        message: 'No token found',
+      })
+    );
+  }
+
+  //TODO 2 validate the token
+  let decodedPayload;
+  try {
+    decodedPayload = await promisify(jwt.verify)(token, process.env.JWTSECRET);
+    // console.log(decodedPayload);
+  } catch (err) {
+    return next(
+      res.status(401).json({
+        status: 'failed',
+        message: 'Not a valid Token',
+      })
+    );
+  }
+  //TODO 3 check if user still exists
+  const currUser = await User.findById(decodedPayload);
+  if (!currUser) {
+    return next(
+      res.status(401).json({
+        status: 'failed',
+        message: "The user belonging to the token  doesn't exists",
+      })
+    );
+  }
+  //TODO 4 check if user changed password after token was issued
+
+  // if (currUser.changedPasswordAfter(decodedPayload.iat)) {
+  //   return next(
+  //     res.status(401).json({
+  //       status: 'failed',
+  //       message: 'The Password was changed after the token was issued',
+  //     })
+  //   );
+  // }
+
+  //GRANT Access to the Protected route
+  req.user = currUser;
+  next();
 };
