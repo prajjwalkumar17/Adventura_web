@@ -57,13 +57,14 @@ exports.login = async (req, res, next) => {
 };
 exports.protect = async (req, res, next) => {
   //TODO 1 get token and check if its there
+  let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-  // console.log(`♠️ ${token}`);
+
   if (!token) {
     return next(
       res.status(401).json({
@@ -77,7 +78,6 @@ exports.protect = async (req, res, next) => {
   let decodedPayload;
   try {
     decodedPayload = await promisify(jwt.verify)(token, process.env.JWTSECRET);
-    // console.log(decodedPayload);
   } catch (err) {
     return next(
       res.status(401).json({
@@ -87,7 +87,7 @@ exports.protect = async (req, res, next) => {
     );
   }
   //TODO 3 check if user still exists
-  const currUser = await User.findById(decodedPayload);
+  const currUser = await User.findById(decodedPayload.id);
   if (!currUser) {
     return next(
       res.status(401).json({
@@ -98,16 +98,17 @@ exports.protect = async (req, res, next) => {
   }
   //TODO 4 check if user changed password after token was issued
 
-  // if (currUser.changedPasswordAfter(decodedPayload.iat)) {
-  //   return next(
-  //     res.status(401).json({
-  //       status: 'failed',
-  //       message: 'The Password was changed after the token was issued',
-  //     })
-  //   );
-  // }
+  const passChanged = await currUser.changedPasswordAfter(decodedPayload.iat);
+  if (passChanged) {
+    return next(
+      res.status(401).json({
+        status: 'failed',
+        message: 'The Password was changed after the token was issued',
+      })
+    );
+  }
 
-  //GRANT Access to the Protected route
+  //TODOGRANT Access to the Protected route
   req.user = currUser;
   next();
 };
