@@ -1,4 +1,5 @@
 const User = require('./../Models/userModel');
+const sendEmail = require('./../Utils/email');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
@@ -139,11 +140,38 @@ exports.forgotPassword = async (req, res, next) => {
       })
     );
   }
-
   //TODO generate random reset token
   const resetToken = user.createPasswordResetToken();
   // console.log(`😉 ${resetToken}`);
   await user.save({ validateBeforeSave: false });
   //TODO send it to user's email
+  const resetURL = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/users/resetpassword/${resetToken}`;
+
+  const message = `Forgot your password we are here to help\n
+  Patch request with your new password and password confirm to:\n\n${resetURL}\nIf you didn't requested this please ignore!`;
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'password token (Valid for 10 min)',
+      message,
+    });
+    res.status(200).json({
+      status: 'Success',
+      message: 'Token sent to email',
+    });
+  } catch (err) {
+    console.log(err);
+    user.PasswordResetToken = undefined;
+    user.PasswordResetTokenExpiresIn = undefined;
+    user.save({ validateBeforeSave: false });
+    return next(
+      res.status(500).json({
+        status: 'failed',
+        message: 'There was an error sending the email',
+      })
+    );
+  }
 };
 exports.resetPassword = (req, res, next) => {};
