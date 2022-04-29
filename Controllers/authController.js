@@ -50,7 +50,7 @@ exports.login = async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      loggefIn: true,
+      loggedIn: true,
       token: token,
     },
   });
@@ -111,4 +111,19 @@ exports.protect = async (req, res, next) => {
   //TODOGRANT Access to the Protected route
   req.user = currUser;
   next();
+};
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles['admin','user'] role='user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        res.status(403).json({
+          status: 'failed',
+          message: 'not enough permissions',
+        })
+      );
+      next();
+    }
+  };
 };
