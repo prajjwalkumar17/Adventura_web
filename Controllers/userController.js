@@ -4,7 +4,7 @@ exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await userModel.find();
     res.status(200).json({
-      status: 'error',
+      status: 'Success',
       results: users.length,
       data: {
         users,

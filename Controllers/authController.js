@@ -127,3 +127,23 @@ exports.restrictTo = (...roles) => {
     }
   };
 };
+
+exports.forgotPassword = async (req, res, next) => {
+  //TODO get user from the speacified management
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(
+      res.status(404).json({
+        status: 'failed',
+        message: 'No user found with this email address',
+      })
+    );
+  }
+
+  //TODO generate random reset token
+  const resetToken = user.createPasswordResetToken();
+  // console.log(`😉 ${resetToken}`);
+  await user.save({ validateBeforeSave: false });
+  //TODO send it to user's email
+};
+exports.resetPassword = (req, res, next) => {};
