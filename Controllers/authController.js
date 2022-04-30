@@ -9,19 +9,20 @@ const TokenSigner = (Givenid) => {
     expiresIn: process.env.EXPIRESIN,
   });
 };
-
+const createAndSendToken = (user, statusCode, res) => {
+  const token = TokenSigner(user._id);
+  res.status(statusCode).json({
+    status: 'sucess',
+    token,
+    data: {
+      user,
+    },
+  });
+};
 exports.signup = async (req, res, next) => {
   try {
     const newUser = await User.create(req.body);
-
-    const token = TokenSigner(newUser._id);
-    res.status(201).json({
-      status: 'sucess',
-      token,
-      data: {
-        user: newUser,
-      },
-    });
+    createAndSendToken(newUser, 201, res);
   } catch (err) {
     next(err);
   }
@@ -30,10 +31,12 @@ exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   //TODO check if email and passwords are filled in
   if (!email || !password) {
-    res.status(400).json({
-      status: 'failed',
-      message: 'must enter email and password',
-    });
+    return next(
+      res.status(400).json({
+        status: 'failed',
+        message: 'must enter email and password',
+      })
+    );
   }
   //TODO check if email and password are correct
   const userCred = await User.findOne({ email }).select('+password');
@@ -41,21 +44,16 @@ exports.login = async (req, res, next) => {
     !userCred ||
     !(await userCred.loginPasswordChecker(password, userCred.password))
   ) {
-    res.status(400).json({
-      status: 'failed',
-      message: 'The entered Password/Username is incorrect',
-    });
+    return next(
+      res.status(400).json({
+        status: 'failed',
+        message: 'The entered Password/Username is incorrect',
+      })
+    );
   }
 
   //TODOLog in user by sending him toked
-  const token = TokenSigner(userCred._id);
-  res.status(200).json({
-    status: 'success',
-    data: {
-      loggedIn: true,
-      token: token,
-    },
-  });
+  createAndSendToken(userCred, 200, res);
 };
 exports.protect = async (req, res, next) => {
   //TODO 1 get token and check if its there
@@ -85,6 +83,7 @@ exports.protect = async (req, res, next) => {
       res.status(401).json({
         status: 'failed',
         message: 'Not a valid Token',
+        err,
       })
     );
   }
@@ -203,11 +202,7 @@ exports.resetPassword = async (req, res, next) => {
     //TODO update changedPasswordAt property of user
     //done in the model
     //TODO log the user in send JWT
-    const token = TokenSigner(user._id);
-    res.status(200).json({
-      status: 'success',
-      token,
-    });
+    createAndSendToken(user, 200, res);
   } catch (err) {
     res.status(500).json({
       status: 'failed',
@@ -215,4 +210,28 @@ exports.resetPassword = async (req, res, next) => {
       err,
     });
   }
+};
+exports.updatePassword = async (req, res, next) => {
+  //TODO get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  //TODO if the supplied current password is correct
+  if (
+    !(await user.loginPasswordChecker(req.body.passwordCurrent, user.password))
+  ) {
+    return next(
+      res.status(401).json({
+        status: 'failed',
+        message: 'The current password was wrong',
+      })
+    );
+  }
+
+  //TODO update the password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  //TODO login user and send jWT
+  createAndSendToken(user, 200, res);
 };
