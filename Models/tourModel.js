@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const User = require('./userModel');
 const toursSchema = new mongoose.Schema(
   {
     name: {
@@ -68,6 +69,7 @@ const toursSchema = new mongoose.Schema(
       description: String,
       address: String,
     },
+    //TODO embedding
     locations: [
       {
         type: {
@@ -79,6 +81,16 @@ const toursSchema = new mongoose.Schema(
         description: String,
         address: String,
         day: Number,
+      },
+    ],
+    //TODO embedding
+    // guidesIds: Array,
+    //TODO referencing & populating
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        //This is the table connection
+        ref: 'Users',
       },
     ],
   },
@@ -105,6 +117,14 @@ const tourpre1 = toursSchema.pre('save', function (next) {
 //   console.log(this);
 //   next();
 // });
+//INIT for embedding the guides works only for creating new doc
+// toursSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guidesIds.map(
+//     async (id) => await User.findById(id)
+//   );
+//   this.guidesIds = await Promise.all(guidesPromises);
+//   next();
+// });
 //TODO query middleware find hook
 toursSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
@@ -114,6 +134,15 @@ toursSchema.pre(/^find/, function (next) {
 //   this.find({ secretTour: { $ne: true } });
 //   next();
 // });
+//INIT populating guide details
+toursSchema.pre(/^find/, function (next) {
+  //this points to current query and populates all the docs
+  this.populate({
+    path: 'guides',
+    select: '-__v -PasswordLastChangedAt',
+  });
+  next();
+});
 
 //TODO aggregation middleware
 toursSchema.pre('aggregate', function (next) {
