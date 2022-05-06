@@ -1,6 +1,7 @@
 const express = require('express');
 const tourRouter = require('./Routes/TourRoutes');
 const userRouter = require('./Routes/UserRoutes');
+const reviewRouter = require('./Routes/ReviewRoutes');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -45,8 +46,10 @@ const IPlimit = rateLimit({
 app.use('/api', IPlimit);
 
 //TODO routes
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //TODO test middlewares for non defined routes
 app.all('*', (req, res, next) => {

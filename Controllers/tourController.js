@@ -128,9 +128,13 @@ exports.getAllTours = async (req, res) => {
 
 exports.getTour = async (req, res) => {
   try {
-    const idRequested = req.params.id;
     // const tourData = await tourModel.findById(idRequested);
-    const tourData = await tourModel.findOne({ _id: idRequested });
+    //TODO pupulating req tours with the guides data by adding populate in query and not in actual database
+    const tourData = await tourModel
+      .findById(req.params.id)
+      .populate('reviews');
+    //poipulating the reviews for only get of one tour by virtual populate
+    //we only populate the references in model with the guide details using middle ware
 
     res.status(200).json({
       status: 'sucess',
