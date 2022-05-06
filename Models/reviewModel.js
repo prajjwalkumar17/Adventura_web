@@ -13,7 +13,7 @@ const reviewSchema = new mongoose.Schema(
     },
     tour: {
       type: mongoose.Schema.ObjectId,
-      ref: 'Tour',
+      ref: 'Tours',
       required: [true, 'Review must belong to a tour'],
     },
     user: {
@@ -31,17 +31,25 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+//BUG to remove the chain of populate
+// reviewSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'tour',
+//     select: 'name',
+//   }).populate({
+//     path: 'user',
+//     select: 'name photo',
+//   });
+//   next();
+// });
 
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
-    path: 'tour',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'name photo',
   });
   next();
 });
 
-const Reviewmodel = new mongoose.model('Review', reviewSchema);
+const Reviewmodel = new mongoose.model('Reviews', reviewSchema);
 module.exports = Reviewmodel;

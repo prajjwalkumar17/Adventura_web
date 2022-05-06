@@ -104,6 +104,13 @@ toursSchema.virtual('durationWeeks').get(function () {
   return `${Math.round(this.duration / 7)} Week`;
 });
 
+//INIT virtually populating the review in tour and not doing child ref as it could grow infnite
+toursSchema.virtual('reviews', {
+  ref: 'Reviews',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 //TODO document middleware:runs before save and create()
 const tourpre1 = toursSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
@@ -151,5 +158,5 @@ toursSchema.pre('aggregate', function (next) {
   next();
 });
 
-const TourModel = new mongoose.model('Tour', toursSchema);
+const TourModel = new mongoose.model('Tours', toursSchema);
 module.exports = TourModel;
