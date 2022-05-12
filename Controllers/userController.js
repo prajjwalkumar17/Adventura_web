@@ -1,5 +1,6 @@
 const UserModel = require('./../Models/userModel');
 const userModel = require('./../Models/userModel');
+const handler = require('./handlerFactory');
 
 const filterBy = (obj, ...allowedFields) => {
   const newobj = {};
@@ -44,12 +45,7 @@ exports.updateUser = (req, res) => {
     message: 'Route not defined as of now!',
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route not defined as of now!',
-  });
-};
+exports.deleteUser = handler.deleteOne(userModel);
 exports.updateme = async (req, res, next) => {
   //TODO Create error when there is password in the body
   if (req.body.password || req.body.passwordConfirm) {

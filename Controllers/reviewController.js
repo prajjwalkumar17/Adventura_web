@@ -7,6 +7,7 @@ exports.getallReviews = async (req, res) => {
   const reviews = await reviewModel.find(filter);
   return res.status(200).json({
     status: 'sucess',
+    results: reviews.length,
     data: {
       reviews,
     },
@@ -24,3 +25,4 @@ exports.postreview = async (req, res) => {
     },
   });
 };
+exports.deleteAreview = handler.deleteOne(reviewModel);
