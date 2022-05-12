@@ -1,9 +1,11 @@
 const express = require('express');
 const tourController = require('./../Controllers/tourController');
 const authController = require('./../Controllers/authController');
-const reviewController = require('./../Controllers/reviewController');
+const reviewRouter = require('./ReviewRoutes');
 
 const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/plan/:year')
@@ -32,10 +34,10 @@ router
     tourController.deleteTour
   );
 
-router.route('/:tourId/reviews').post(
-  authController.protect,
-  // authController.restrictTo('user'),
-  reviewController.postreview
-);
+// router.route('/:tourId/reviews').post(
+//   authController.protect,
+//   // authController.restrictTo('user'),
+//   reviewController.postreview
+// );
 
 module.exports = router;
