@@ -9,5 +9,4 @@ router.route('/').get(reviewController.getallReviews).post(
   // authController.restrictTo('user'),
   reviewController.postreview
 );
-
 module.exports = router;

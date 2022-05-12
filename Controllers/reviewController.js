@@ -1,4 +1,5 @@
 const reviewModel = require('./../Models/reviewModel');
+const handler = require('./handlerFactory');
 
 exports.getallReviews = async (req, res) => {
   let filter = {};
