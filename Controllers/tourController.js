@@ -1,5 +1,6 @@
 const tourModel = require('./../Models/tourModel');
 const APIFeatures = require('./../Utils/APIFeatures');
+const handler = require('./handlerFactory');
 
 exports.getMonthPlans = async (req, res) => {
   try {
@@ -191,16 +192,4 @@ exports.updateTour = async (req, res) => {
   }
 };
 
-exports.deleteTour = async (req, res) => {
-  try {
-    await tourModel.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      data: tourtoDelete,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: 'No such tour found',
-    });
-  }
-};
+exports.deleteTour = handler.deleteOne(tourModel);
