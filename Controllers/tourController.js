@@ -1,5 +1,4 @@
 const tourModel = require('./../Models/tourModel');
-const APIFeatures = require('./../Utils/APIFeatures');
 const handler = require('./handlerFactory');
 
 exports.getMonthPlans = async (req, res) => {
@@ -100,96 +99,10 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = async (req, res) => {
-  try {
-    //Execute query
-    const features = new APIFeatures(tourModel.find(), req.query)
-      .filter()
-      .sortQuery()
-      .limitFields()
-      .paginate();
-
-    const allTourData = await features.query;
-
-    //send result
-    res.status(200).json({
-      status: 'sucess',
-      results: allTourData.length,
-      data: {
-        tours: allTourData,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'failed',
-      message: err,
-    });
-  }
-};
-
-exports.getTour = async (req, res) => {
-  try {
-    // const tourData = await tourModel.findById(idRequested);
-    //TODO pupulating req tours with the guides data by adding populate in query and not in actual database
-    const tourData = await tourModel
-      .findById(req.params.id)
-      .populate('reviews');
-    //poipulating the reviews for only get of one tour by virtual populate
-    //we only populate the references in model with the guide details using middle ware
-
-    res.status(200).json({
-      status: 'sucess',
-      results: 1,
-      data: {
-        tour: tourData,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Invalid Id',
-    });
-  }
-};
-
-exports.createTour = async (req, res) => {
-  try {
-    const newCreatedTour = await tourModel.create(req.body);
-
-    // console.log(newCreatedTour);
-    res.status(201).json({
-      status: 'sucess',
-      data: {
-        tours: newCreatedTour,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'Failed',
-      message: 'Invalid data received',
-    });
-  }
-};
-
-exports.updateTour = async (req, res) => {
-  try {
-    const updatedTour = await tourModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    res.status(202).json({
-      data: updatedTour,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Invalid request',
-    });
-  }
-};
-
+exports.getAllTours = handler.getAll(tourModel);
+exports.getTour = handler.getOne(tourModel, {
+  path: 'reviews',
+});
+exports.createTour = handler.createOne(tourModel);
+exports.updateTour = handler.updateOne(tourModel);
 exports.deleteTour = handler.deleteOne(tourModel);
