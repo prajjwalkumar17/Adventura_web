@@ -16,6 +16,10 @@ exports.createUser = (req, res) => {
     message: 'Route not defined! Use signUp for this',
   });
 };
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 exports.updateme = async (req, res, next) => {
   //TODO Create error when there is password in the body
   if (req.body.password || req.body.passwordConfirm) {
