@@ -10,42 +10,16 @@ const filterBy = (obj, ...allowedFields) => {
   return newobj;
 };
 
-exports.getAllUsers = async (req, res, next) => {
-  try {
-    const users = await userModel.find();
-    res.status(200).json({
-      status: 'Success',
-      results: users.length,
-      data: {
-        users,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'error',
-      message: 'No users found',
-    });
-  }
-};
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'Route not defined as of now!',
+    message: 'Route not defined! Use signUp for this',
   });
 };
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route not defined as of now!',
-  });
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
 };
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'Route not defined as of now!',
-  });
-};
-exports.deleteUser = handler.deleteOne(userModel);
 exports.updateme = async (req, res, next) => {
   //TODO Create error when there is password in the body
   if (req.body.password || req.body.passwordConfirm) {
@@ -77,8 +51,14 @@ exports.updateme = async (req, res, next) => {
 };
 exports.deleteMe = async (req, res, next) => {
   await userModel.findByIdAndUpdate(req.user.id, { active: false });
-  res.status(204).json({
-    status: 'Sucessfull',
-    data: null,
-  });
+  return next(
+    res.status(204).json({
+      status: 'Sucessfull',
+      data: null,
+    })
+  );
 };
+exports.getAllUsers = handler.getAll(userModel);
+exports.getUser = handler.getOne(userModel);
+exports.updateUser = handler.updateOne(userModel);
+exports.deleteUser = handler.deleteOne(userModel);
