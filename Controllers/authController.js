@@ -137,8 +137,8 @@ exports.restrictTo = (...roles) => {
           message: 'not enough permissions',
         })
       );
-      next();
     }
+    next();
   };
 };
 
