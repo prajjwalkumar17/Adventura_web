@@ -12,7 +12,6 @@ exports.deleteOne = (Model) => async (req, res) => {
     });
   }
 };
-
 exports.updateOne = (Model) => async (req, res) => {
   try {
     const updatedDoc = await Model.findByIdAndUpdate(req.params.id, req.body, {
@@ -32,7 +31,6 @@ exports.updateOne = (Model) => async (req, res) => {
     });
   }
 };
-
 exports.createOne = (Model) => async (req, res) => {
   try {
     const newCreateddoc = await Model.create(req.body);
@@ -49,7 +47,6 @@ exports.createOne = (Model) => async (req, res) => {
     });
   }
 };
-
 exports.getOne = (Model, populateOptions) => async (req, res) => {
   try {
     let query = Model.findById(req.params.id);
