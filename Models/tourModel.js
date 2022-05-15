@@ -99,6 +99,11 @@ const toursSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+//indexing in asc ordersingle index
+toursSchema.index({ price: 1 });
+toursSchema.index({ slug: 1 });
+//indexing in asc order compound index
+toursSchema.index({ price: 1, ratingsAverage: -1 });
 //TODO virtual property
 toursSchema.virtual('durationWeeks').get(function () {
   return `${Math.round(this.duration / 7)} Week`;
