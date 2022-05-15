@@ -129,7 +129,7 @@ exports.protect = async (req, res, next) => {
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    //roles['admin','user'] role='user'
+    //roles['admin','user','lead-guide','guide'] role='user'
     if (!roles.includes(req.user.role)) {
       return next(
         res.status(403).json({
@@ -137,8 +137,8 @@ exports.restrictTo = (...roles) => {
           message: 'not enough permissions',
         })
       );
-      next();
     }
+    next();
   };
 };
 
