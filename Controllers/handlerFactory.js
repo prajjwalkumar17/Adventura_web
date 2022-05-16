@@ -44,6 +44,7 @@ exports.createOne = (Model) => async (req, res) => {
     return res.status(400).json({
       status: 'Failed',
       message: 'Invalid data received',
+      err,
     });
   }
 };
