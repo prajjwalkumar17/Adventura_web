@@ -105,6 +105,7 @@ const toursSchema = new mongoose.Schema(
 //indexing in asc ordersingle index
 toursSchema.index({ price: 1 });
 toursSchema.index({ slug: 1 });
+toursSchema.index({ startLocation: '2dsphere' });
 //indexing in asc order compound index
 toursSchema.index({ price: 1, ratingsAverage: -1 });
 //TODO virtual property

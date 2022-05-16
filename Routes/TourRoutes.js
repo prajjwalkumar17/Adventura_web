@@ -25,6 +25,14 @@ router
   .get(tourController.aliasTopTours, tourController.getStats);
 
 router
+  .route('/tours-within/:distance/location/:latlon/unit/:unit')
+  .get(tourController.getToursWithin);
+
+router
+  .route('/distances/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
+
+router
   .route('/')
   .get(tourController.getAllTours)
   .post(
