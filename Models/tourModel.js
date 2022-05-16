@@ -161,11 +161,11 @@ toursSchema.pre(/^find/, function (next) {
 });
 
 //TODO aggregation middleware
-toursSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  // console.log(this.pipeline());
-  next();
-});
+// toursSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   // console.log(this.pipeline());
+//   next();
+// });
 
 const TourModel = new mongoose.model('Tours', toursSchema);
 module.exports = TourModel;

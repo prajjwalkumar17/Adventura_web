@@ -30,7 +30,7 @@ router
 
 router
   .route('/distances/:latlng/unit/:unit')
-  .get(tourController.getToursWithin);
+  .get(tourController.distanceToallTours);
 
 router
   .route('/')
