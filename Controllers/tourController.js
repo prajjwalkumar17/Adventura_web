@@ -99,6 +99,42 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
+// .route('/tours-within/:distance/location/:latlon/unit/:unit')
+
+exports.getToursWithin = async (req, res, next) => {
+  try {
+    const { distance, latlon, unit } = req.params;
+    const [lat, lng] = latlon.split(',');
+    const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+    if (!lat || !lng)
+      return next(
+        res.status(400).json({
+          status: 'failed',
+          message: 'please provide latlng in format as lat,lng',
+        })
+      );
+    const tourswithin = await tourModel.find({
+      startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    });
+
+    return next(
+      res.status(200).json({
+        status: 'sucess',
+        results: tourswithin.length,
+        data: tourswithin,
+      })
+    );
+  } catch (err) {
+    return next(
+      res.status(400).json({
+        status: 'failed',
+        message: 'some problem with data recheck the values',
+        err,
+      })
+    );
+  }
+};
+
 exports.getAllTours = handler.getAll(tourModel);
 exports.getTour = handler.getOne(tourModel, {
   path: 'reviews',
