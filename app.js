@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const tourRouter = require('./Routes/TourRoutes');
 const userRouter = require('./Routes/UserRoutes');
@@ -10,6 +11,11 @@ const hpp = require('hpp');
 // const appError = require('./Utils/appError');
 // const globalErrorHandler = require('./Controllers/errorController');
 const app = express();
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+// app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 //INIT Global Middlewares
 //TODO Sanitize global middleware
 app.use(mongoSanitize());
@@ -30,7 +36,6 @@ app.use(helmet());
 
 //TODO Body parser reding data from body into req.body and limit data to only 10 kb
 app.use(express.json({ limit: '10kb' }));
-app.use(express.static('./public'));
 
 //TODO dev logger
 const morgan = require('morgan');
@@ -46,7 +51,10 @@ const IPlimit = rateLimit({
 app.use('/api', IPlimit);
 
 //TODO routes
-
+app.get('/', (req, res) => {
+  //wiil search it autoamtically in
+  res.status(200).render('base');
+});
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
