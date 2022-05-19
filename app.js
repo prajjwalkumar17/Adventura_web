@@ -53,7 +53,10 @@ app.use('/api', IPlimit);
 //TODO routes
 app.get('/', (req, res) => {
   //wiil search it autoamtically in
-  res.status(200).render('base');
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Pk',
+  });
 });
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);

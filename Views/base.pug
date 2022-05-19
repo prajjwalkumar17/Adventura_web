@@ -1,1 +1,15 @@
-h1 The Park camper
+doctype html
+html
+    head 
+        title Adventura | #{tour}
+        //- <link rel="stylesheet" href="public/style/style.css"/>
+        link(rel='stylesheet' href='css/style.css')
+        link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+    body
+        //-buffered code
+        h1= tour
+        h2= user.toUpperCase()
+        //- unbuffered code
+        - const x=9
+        h2= x
+        //-p This just a paragraph
