@@ -13,6 +13,7 @@ router.use(authController.protect);
 router.patch(
   '/updateme',
   userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
   userController.updateme
 );
 router.delete('/deleteme', userController.deleteMe);
