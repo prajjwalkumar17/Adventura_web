@@ -26,14 +26,21 @@ const upload = multer({
 });
 
 exports.uploadUserPhoto = upload.single('photo');
-exports.resizeUserPhoto = (req, res, next) => {
-  if (!req.file) return next();
-  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-  sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/img/user${req.file.filename}`);
+exports.resizeUserPhoto = async (req, res, next) => {
+  try {
+    if (!req.file) return next();
+    req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+    await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/user${req.file.filename}`);
+  } catch (err) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'Invalid file',
+    });
+  }
   next();
 };
 
