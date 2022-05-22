@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const compression = require('compression');
 // const appError = require('./Utils/appError');
 // const globalErrorHandler = require('./Controllers/errorController');
 const app = express();
@@ -31,6 +32,8 @@ app.use(
     ],
   })
 );
+
+app.use(compression());
 //TODO set http headers
 app.use(helmet());
 
